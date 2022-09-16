@@ -4,6 +4,9 @@
   xmlns:app="http://schemas.android.com/apk/res-auto">
 
    <data>
+      <variable
+        name="fragmentHome"
+        type="com.example.notepadthoughts.ui.fragments.HomeFragment" />
 
    </data>
 
@@ -22,6 +25,7 @@
         app:layout_constraintBottom_toTopOf="@id/guideline3"
         app:layout_constraintEnd_toEndOf="@id/guideline4"
         app:maxImageSize="30dp"
+        android:onClick="@{(view)->fragmentHome.fabOnClick(view)}"
         tools:ignore="SpeakableTextPresentCheck" />
 
       <androidx.constraintlayout.widget.ConstraintLayout
