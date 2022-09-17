@@ -23,6 +23,10 @@ class NotesFragment : Fragment() {
       binding.fragmentNotes = this
       return binding.root
    }
+
+   fun onAddNoteClick(view:View){
+
+   }
    fun onColorViewClick(check: View){
 
       hideAllCheck()

@@ -96,6 +96,7 @@
         app:elevation="15dp"
         app:layout_anchor="@id/ColorChoosebottomappbar"
         app:maxImageSize="30dp"
+        android:onClick="@{(view) -> fragmentNotes.onAddNoteClick(view)}"
         app:srcCompat="@drawable/ic_baseline_check_24"
         tools:ignore="SpeakableTextPresentCheck" />
 
