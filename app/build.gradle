@@ -58,4 +58,9 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:$hiltVersion"
     //Bar
     implementation 'com.github.ibrahimsn98:SmoothBottomBar:1.7.9'
+    // Room
+    def roomVersion = "2.4.2"
+    implementation "androidx.room:room-runtime:$roomVersion"
+    implementation "androidx.room:room-ktx:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
 }
