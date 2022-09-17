@@ -12,9 +12,15 @@ import com.example.notepadthoughts.databinding.FragmentHomeBinding
 import com.example.notepadthoughts.models.Notes
 import com.example.notepadthoughts.ui.adapter.PinnedRVAdapter
 import com.example.notepadthoughts.ui.adapter.UpcomingRvAdapter
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
+
+   @Inject
+   lateinit var name:String
+
    private var mBinding: FragmentHomeBinding? = null
    private val binding get() = mBinding!!
 
