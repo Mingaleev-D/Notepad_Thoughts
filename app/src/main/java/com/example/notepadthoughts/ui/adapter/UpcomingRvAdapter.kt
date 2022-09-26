@@ -1,26 +1,36 @@
 package com.example.notepadthoughts.ui.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notepadthoughts.R
 import com.example.notepadthoughts.databinding.UpcomingRvItemsBinding
-import com.example.notepadthoughts.models.Notes
+import com.example.notepadthoughts.db.NotesEntity
 
 /**
  * @author : Mingaleev D
  * @data : 16/09/2022
  */
 
-class UpcomingRvAdapter(private val model: ArrayList<Notes>) :
+class UpcomingRvAdapter(private val model: ArrayList<NotesEntity>,private var listener: CardClickListener) :
    RecyclerView.Adapter<UpcomingRvAdapter.MyViewHolder>() {
 
    class MyViewHolder(private val binding: UpcomingRvItemsBinding) :
       RecyclerView.ViewHolder(binding.root) {
-      fun bind(notesModel: Notes) {
-         binding.pinnedtitle11.text = notesModel.title
-         binding.pinneddescription11.text = notesModel.note
+
+      fun bind(noteEntity: NotesEntity, listener: CardClickListener) {
+
+         binding.upcomingCard.setCardBackgroundColor(Color.parseColor(noteEntity.notesModel.color))
+
+         binding.pinnedtitle11.text = noteEntity.notesModel.title
+         binding.pinneddescription11.text = noteEntity.notesModel.note
+
+         binding.upcomingCard.setOnClickListener {
+          listener.onItemClickListener(noteEntity)
+         }
+
          binding.executePendingBindings()
       }
    }
@@ -36,7 +46,7 @@ class UpcomingRvAdapter(private val model: ArrayList<Notes>) :
    }
 
    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-      holder.bind(model[position])
+      holder.bind(model[position],listener)
    }
 
    override fun getItemCount(): Int = model.size
