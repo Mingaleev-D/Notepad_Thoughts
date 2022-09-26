@@ -1,80 +1,97 @@
 package com.example.notepadthoughts.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.example.notepadthoughts.R
 import com.example.notepadthoughts.databinding.FragmentHomeBinding
+import com.example.notepadthoughts.db.NotesEntity
 import com.example.notepadthoughts.models.Notes
+import com.example.notepadthoughts.ui.adapter.CardClickListener
 import com.example.notepadthoughts.ui.adapter.PinnedRVAdapter
 import com.example.notepadthoughts.ui.adapter.UpcomingRvAdapter
+import com.example.notepadthoughts.ui.viewmodel.NotesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(),CardClickListener {
+  private var mBinding: FragmentHomeBinding? = null
+  private val binding get() = mBinding!!
 
-   @Inject
-   lateinit var name:String
+  private val viewModel: NotesViewModel by viewModels()
 
-   private var mBinding: FragmentHomeBinding? = null
-   private val binding get() = mBinding!!
+  override fun onCreateView(
+    inflater: LayoutInflater, container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
+    mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
+    binding.fragmentHome = this
+    return binding.root
+  }
 
-   override fun onCreateView(
-      inflater: LayoutInflater, container: ViewGroup?,
-      savedInstanceState: Bundle?
-   ): View {
-      mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
-      binding.fragmentHome = this
-      return binding.root
-   }
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
 
-   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-      super.onViewCreated(view, savedInstanceState)
+    setupPinnedRecyclerView()
+    setupUpcomingRecyclerView()
+  }
 
-      setupPinnedRecyclerView()
-      setupUpcomingRecyclerView()
-   }
-
-   private fun setupUpcomingRecyclerView() {
-      val data: ArrayList<Notes> = ArrayList()
-      data.add(Notes("test 1", "test 1"))
-      data.add(Notes("test 2", "test 2"))
-      data.add(Notes("test 3", "test 3"))
-      data.add(Notes("test 4", "test 4"))
-      data.add(Notes("test 5", "test 5"))
-
-      binding.upcomingRv.adapter = UpcomingRvAdapter(data)
-   }
-
-   private fun setupPinnedRecyclerView() {
-      val data: ArrayList<Notes> = ArrayList()
-      data.add(Notes("test 1", "test 1"))
-      data.add(Notes("test 2", "test 2"))
-      data.add(Notes("test 3", "test 3"))
-      data.add(Notes("test 4", "test 4"))
-      data.add(Notes("test 5", "test 5"))
-
-      if (data.isEmpty()) {
-         binding.pinnedCon.visibility = View.GONE
-      } else {
-         binding.pinnedCon.visibility = View.VISIBLE
+  private fun setupUpcomingRecyclerView() {
+    viewModel.liveData.observe(viewLifecycleOwner) { listData ->
+      val data: ArrayList<NotesEntity> = ArrayList()
+      listData.forEach {
+        if (!it.notesModel.pinned) {
+          data.add(it)
+        }
       }
-      binding.pinnedRv.adapter = PinnedRVAdapter(data)
-   }
+      if (data.isEmpty()) {
+        binding.textView3.visibility = View.VISIBLE
+      } else {
+        binding.textView3.visibility = View.GONE
+      }
+      binding.upcomingRv.adapter = UpcomingRvAdapter(data,this)
+    }
+  }
 
-   fun fabOnClick(view: View) {
-      view.findNavController().navigate(R.id.action_homeFragment_to_notesFragment)
-   }
+  private fun setupPinnedRecyclerView() {
+    viewModel.liveData.observe(viewLifecycleOwner) { listData ->
+      val data: ArrayList<NotesEntity> = ArrayList()
+      listData.forEach {
+        if (it.notesModel.pinned) {
+          data.add(it)
+        }
+      }
+      if (data.isEmpty())
+        binding.pinnedCon.visibility = View.GONE
+      else
+        binding.pinnedCon.visibility = View.VISIBLE
 
-   override fun onDestroy() {
-      super.onDestroy()
-      mBinding = null
-   }
+      binding.pinnedRv.adapter = PinnedRVAdapter(data,this)
+    }
+  }
+
+  fun fabOnClick(view: View) {
+    view.findNavController().navigate(R.id.action_homeFragment_to_notesFragment)
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    mBinding = null
+  }
+
+  override fun onItemClickListener(noteEntity: NotesEntity) {
+    val bundle = bundleOf("dataModel" to noteEntity)
+    Navigation.findNavController(binding.root).navigate(R.id.action_homeFragment_to_notesFragment)
+  }
 
 
 }
